@@ -45,6 +45,36 @@ router.post('/', (req, res, next) => {
   })
 })
 
+router.patch('/:id', (req, res, next) => {
+  const updateBook = {
+    title: req.body.title,
+    author: req.body.author,
+    genre: req.body.genre,
+    description: req.body.description,
+    coverUrl: req.body.coverUrl
+  }
+
+  knex('books')
+    .where('books.id', req.params.id)
+    .update(humps.decamelizeKeys(updateBook))
+    .then((book) => {
+      knex('books')
+        .where('books.id', req.params.id)
+        .first()
+        .then((book) => {
+        const returnUpdatedBook = {
+          id: book['id'],
+          title: book['title'],
+          author: book['author'],
+          genre: book['genre'],
+          description: book['description'],
+          cover_url: book['cover_url']
+        }
+        res.json(humps.camelizeKeys(returnUpdatedBook))
+    })
+  })
+})
+
 router.delete('/:id', (req, res, next) => {
     knex('books')
         .where('books.id', req.params.id)
@@ -52,7 +82,6 @@ router.delete('/:id', (req, res, next) => {
 
     knex('books')
         .where('books.id', req.params.id)
-        // .returning('title', 'author', 'genre', 'description', 'cover_url')
         .first()
         .then((book) => {
             const returnObj = {
@@ -63,7 +92,6 @@ router.delete('/:id', (req, res, next) => {
                 cover_url: book['cover_url']
             }
             res.json(humps.camelizeKeys(returnObj))
-            console.log(returnObj);
         })
 })
 
