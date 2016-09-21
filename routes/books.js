@@ -34,18 +34,25 @@ router.post('/', (req, res, next) => {
     author: req.body.author,
     genre: req.body.genre,
     description: req.body.description,
-    cover_url: req.body.cover_url,
+    cover_url: req.body.coverUrl,
   }
 
-  console.log(newBook);
-
   knex('books')
-    .insert(newBook,'id', 'created_at', 'updated_at', '*')
+    .insert(newBook, '*')
     .then((book) => {
       res.send(humps.camelizeKeys(book[0]))
-      console.log(book);
     })
 
+})
+
+router.delete('/:id', (req, res, next) => {
+  knex('books')
+    .where('books.id', req.params.id)
+    .del()
+    .then((book) => {
+      res.json(book)
+    console.log(book);
+    })
 })
 
 module.exports = router;
