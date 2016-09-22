@@ -27,7 +27,9 @@ router.post('/', (req, res, next) => {
             .first()
             .then((returnUserObject) => {
               delete returnUserObject.hashed_password;
+              req.session.userInfo = returnUserObject;
               res.json(humps.camelizeKeys(returnUserObject))
+              // res.redirect('/login')
             })
         })
 });

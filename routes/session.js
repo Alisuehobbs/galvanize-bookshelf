@@ -5,43 +5,41 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const knex = require('../knex');
 const humps = require('humps')
+const boom = require('boom')
 
+router.get('/', (req, res, next) => {
+    if (req.session.userInfo) {
+        res.send(true)
+    } else {
+    res.send(false)
+  }
+})
 
-// router.get('/', (req, res, next) => {
-//     knex('favorites')
-//         .orderBy('title')
-//         .then(books => {
-//             res.send(humps.camelizeKeys(books))
-//         })
-//         .catch((err) => {
-//             next(err);
-//         });
-// })
-//
-// router.post('/', (req, res, next) => {
-//
-//     const hashedPassword = bcrypt.hashSync(req.body.password, 8)
-//
-//     const newUserObj = {
-//         firstName: req.body.firstName,
-//         lastName: req.body.lastName,
-//         email: req.body.email,
-//         hashedPassword: hashedPassword
-//     }
-//
-//     knex('users')
-//         .returning('id')
-//         .insert(humps.decamelizeKeys(newUserObj), 'id')
-//         .then((users) => {
-//             const id = users[0]
-//             knex('users')
-//             .where('id', id)
-//             .first()
-//             .then((returnUserObject) => {
-//               delete returnUserObject.hashed_password;
-//               res.json(humps.camelizeKeys(returnUserObject))
-//             })
-//         })
-// });
+router.post('/', (req, res, next) => {
+    knex('users')
+        .where('email', req.body.email)
+        .then((results) => {
+            if (results.length === 0) {
+                throw boom.create(400, 'Bad email or password')
+            } else {
+                var user = results[0]
+                var passwordMatch = bcrypt.compareSync(req.body.password, user.hashed_password)
+                if (passwordMatch == false) {
+                  throw boom.create(400, 'Bad email or password')
+                } else {
+
+                delete user.hashed_password
+                req.session.userInfo = user
+                res.send(humps.camelizeKeys(user))
+              }
+            }
+            // res.redirect('')
+        })
+});
+
+router.delete('/', (req, res, next) => {
+    req.session = null;
+    res.send(true)
+})
 
 module.exports = router;

@@ -28,22 +28,22 @@ router.get('/:id', (req, res, next) => {
         });
 })
 
-// router.post('/', (req, res, next) => {
-//
-//     const newBook = {
-//         title: req.body.title,
-//         author: req.body.author,
-//         genre: req.body.genre,
-//         description: req.body.description,
-//         coverUrl: req.body.coverUrl,
-//     }
-//
-//     knex('books')
-//         .insert(humps.decamelizeKeys(newBook), '*')
-//         .then((book) => {
-//             res.send(humps.camelizeKeys(book[0]))
-//         })
-// })
+router.post('/', (req, res, next) => {
+
+    const newBook = {
+        title: req.body.title,
+        author: req.body.author,
+        genre: req.body.genre,
+        description: req.body.description,
+        coverUrl: req.body.coverUrl,
+    }
+
+    knex('books')
+        .insert(humps.decamelizeKeys(newBook), '*')
+        .then((book) => {
+            res.send(humps.camelizeKeys(book[0]))
+        })
+})
 
 router.patch('/:id', (req, res, next) => {
     const updateBook = {
