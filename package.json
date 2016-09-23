@@ -5,6 +5,8 @@
   "main": "server.js",
   "scripts": {
     "knex": "knex",
+    "heroku-postbuild": "knex migrate:latest",
+    "nodemon": "nodemon server.js",
     "lint": "eslint  --ignore-pattern public/js/vendor",
     "nf": "nf start",
     "start": "nodemon server.js",
@@ -28,7 +30,7 @@
     "cookie-session": "^2.0.0-alpha.1",
     "express": "^4.14.0",
     "humps": "^1.1.0",
-    "knex": "^0.11.7",
+    "knex": "^0.11.10",
     "morgan": "^1.7.0",
     "pg": "^6.0.0"
   },
@@ -46,6 +48,6 @@
     "supertest": "^1.2.0"
   },
   "engines": {
-    "node": ""
+    "node": "v6.6.0"
   }
 }
