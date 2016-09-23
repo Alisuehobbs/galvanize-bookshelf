@@ -11,30 +11,32 @@ router.get('/', (req, res, next) => {
     if (req.session.userInfo) {
         res.send(true)
     } else {
-    res.send(false)
-  }
+        res.send(false)
+    }
 })
 
 router.post('/', (req, res, next) => {
     knex('users')
         .where('email', req.body.email)
+        .first()
         .then((results) => {
-            if (results.length === 0) {
+            if (!results) {
                 throw boom.create(400, 'Bad email or password')
             } else {
-                var user = results[0]
+                var user = results
                 var passwordMatch = bcrypt.compareSync(req.body.password, user.hashed_password)
                 if (passwordMatch == false) {
-                  throw boom.create(400, 'Bad email or password')
+                    throw boom.create(400, 'Bad email or password')
                 } else {
-
-                delete user.hashed_password
-                req.session.userInfo = user
-                res.send(humps.camelizeKeys(user))
-              }
+                    delete user.hashed_password
+                    req.session.userInfo = user
+                    res.send(humps.camelizeKeys(user))
+                }
             }
-            // res.redirect('')
         })
+        .catch((err) => {
+        next(err);
+    })
 });
 
 router.delete('/', (req, res, next) => {
