@@ -48,9 +48,10 @@ router.post('/', authorize, (req, res, next) => {
 })
 
 router.delete('/', authorize, (req, res, next) => {
+  const bookId = Number.parseInt(req.query.bookId);
   knex('favorites')
     .del()
-    .where('book_id', req.body.bookId)
+    .where('book_id', bookId)
     .first()
     .then((book) => {
       delete book.id
