@@ -24,39 +24,38 @@ router.get('/', authorize, (req, res, next) => {
 });
 
 router.get('/check', authorize, (req, res, next) => {
-  const bookId = Number.parseInt(req.query.bookId);
+    const bookId = Number.parseInt(req.query.bookId);
     knex('books')
         .innerJoin('favorites', 'books.id', 'favorites.book_id')
         .where('books.id', bookId)
         .then((books) => {
             if (books.length === 0) {
-              return res.send(false)
+                return res.send(false)
             }
             res.send(true)
         })
 })
 
 router.post('/', authorize, (req, res, next) => {
-  knex('favorites')
-    .insert({
-      book_id: req.body.bookId,
-      user_id: req.session.userInfo.id
-    }, '*')
-    .then((books) => {
-        res.send(humps.camelizeKeys(books[0]))
-    })
+    knex('favorites')
+        .insert({
+            book_id: req.body.bookId,
+            user_id: req.session.userInfo.id
+        }, '*')
+        .then((books) => {
+            res.send(humps.camelizeKeys(books[0]))
+        })
 })
 
 router.delete('/', authorize, (req, res, next) => {
-  const bookId = Number.parseInt(req.query.bookId);
-  knex('favorites')
-    .del()
-    .where('book_id', bookId)
-    .first()
-    .then((book) => {
-      delete book.id
-      res.send(humps.camelizeKeys(book))
-    })
+    knex('favorites')
+        .del()
+        .where('book_id', req.body.bookId)
+        .first()
+        .then((book) => {
+            delete book.id
+            res.send(humps.camelizeKeys(book))
+        })
 })
 
 module.exports = router;
