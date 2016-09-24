@@ -31,7 +31,7 @@ router.post('/', (req, res, next) => {
                     delete user.hashed_password
                     req.session.userInfo = user
                     res.send(humps.camelizeKeys(user))
-                    res.redirect('/favorites')
+
                 }
             }
         })
