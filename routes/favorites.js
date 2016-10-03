@@ -48,13 +48,36 @@ router.post('/', authorize, (req, res, next) => {
 })
 
 router.delete('/', authorize, (req, res, next) => {
+
+    const bookId = Number.parseInt(req.body.bookId);
+    const userId = Number.parseInt(req.session.userInfo.id);
+
+    let favToDelete = {
+        book_id: bookId,
+        user_id: userId
+    }
+
+    console.log(favToDelete);
+
+    favToDelete = humps.decamelizeKeys(favToDelete)
+
+    let favorite;
+
     knex('favorites')
-        .where('book_id', req.body.bookId)
-        .del()
+        .where(favToDelete)
         .first()
         .then((book) => {
-            delete book.id
-            res.send(humps.camelizeKeys(book))
+            favorite = humps.camelizeKeys(book)
+            return knex('favorites')
+            .del()
+            .where('id', favorite.id)
+        })
+        .then(() => {
+          delete favorite.id
+          res.json(favorite)
+        })
+        .catch((err) => {
+          next(err)
         })
 })
 
